@@ -1,0 +1,7 @@
+image: init
+config:
+  runtime:
+    mkdir:
+      - /var/disk/certs
+  binds:
+    - /var/disk:/var/disk

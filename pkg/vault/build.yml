@@ -1,0 +1,17 @@
+image: vault
+config:
+  net: host
+  runtime:
+    mkdir:
+      - /var/disk/vault/logs
+      - /var/disk/vault/file
+  binds:
+    - /etc/resolv.conf:/etc/resolv.conf:ro
+    - /var/disk/vault/logs:/vault/logs
+    - /var/disk/vault/file:/vault/file
+  capabilities:
+    - CAP_CHOWN
+    - CAP_IPC_LOCK
+    - CAP_SETFCAP
+    - CAP_SETGID
+    - CAP_SETUID

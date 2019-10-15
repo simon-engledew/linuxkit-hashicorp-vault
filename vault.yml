@@ -1,0 +1,99 @@
+kernel:
+  image: "linuxkit/kernel:4.19.56"
+  cmdline: "console=tty1 vga=791 page_poison=1"
+
+init:
+  - linuxkit/init:v0.7
+  - linuxkit/runc:v0.7
+  - linuxkit/containerd:v0.7
+  - linuxkit/ca-certificates:v0.7
+  - linuxkit/memlogd:v0.7
+
+onboot:
+  - name: sysctl
+    image: linuxkit/sysctl:v0.7
+
+  - name: sysfs
+    image: linuxkit/sysfs:v0.7
+
+  - name: format
+    image: linuxkit/format:v0.7
+    command: ["/usr/bin/format", "-verbose", "-type", "ext4", "-label", "DATA"]
+
+  - name: extend
+    image: linuxkit/extend:v0.7
+
+  - name: mount
+    image: linuxkit/mount:v0.7
+    command: ["/usr/bin/mountie", "-label", "DATA", "/var/disk"]
+
+  - name: swap
+    image: linuxkit/swap:v0.7
+    command:
+      ["/swap.sh", "--path", "/var/disk/swap", "--size", "1G", "--encrypt"]
+
+  - name: rngd
+    image: linuxkit/rngd:v0.7
+    command: ["/sbin/rngd", "-1"]
+
+  - name: dhcpcd
+    image: linuxkit/dhcpcd:v0.7
+    binds:
+      - /run/resolvconf:/etc
+      - /var/disk/dhcpcd/eth0.lease:/var/lib/dhcpcd/eth0.lease
+    command:
+      [
+        "/usr/bin/timeout",
+        "-t",
+        "35",
+        "/sbin/dhcpcd",
+        "--timeout",
+        "30",
+        "--nobackground",
+        "--debug",
+        "--config",
+        "/dhcpcd.conf",
+        "eth0",
+        "-1",
+      ]
+
+  - name: init
+    image: simon-engledew/init:latest
+
+services:
+  - name: logwrite
+    image: linuxkit/logwrite:v0.7
+    command: ["/usr/bin/logwrite", "--log-dir=/var/disk/log"]
+    runtime:
+      mkdir:
+        - /var/disk/log
+    binds:
+      - /var/run/memlogdq.sock:/var/run/memlogdq.sock
+      - /var/disk/log:/var/disk/log
+
+  - name: kmsg
+    image: linuxkit/kmsg:v0.7
+
+  - name: ntpd
+    image: linuxkit/openntpd:v0.7
+
+  - name: rngd
+    image: linuxkit/rngd:v0.7
+
+  - name: dhcpcd
+    image: linuxkit/dhcpcd:v0.7
+
+  - name: haproxy
+    image: simon-engledew/haproxy:latest
+
+  - name: vault
+    image: simon-engledew/vault:latest
+
+  - name: getty
+    image: linuxkit/getty:v0.7
+    env:
+      - INSECURE=true
+
+files:
+  - path: var/disk
+    directory: true

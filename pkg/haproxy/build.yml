@@ -1,0 +1,8 @@
+image: haproxy
+config:
+  net: host
+  binds:
+    - /dev:/dev
+    - /var/disk/certs:/var/disk/certs:ro
+  capabilities:
+    - CAP_NET_BIND_SERVICE
