@@ -36,6 +36,9 @@ onboot:
     image: linuxkit/rngd:v0.7
     command: ["/sbin/rngd", "-1"]
 
+  - name: mkfiles
+    image: simon-engledew/mkfiles:latest
+
   - name: dhcpcd
     image: linuxkit/dhcpcd:v0.7
     binds:
@@ -82,6 +85,9 @@ services:
 
   - name: dhcpcd
     image: linuxkit/dhcpcd:v0.7
+    binds:
+      - /run/resolvconf:/etc
+      - /var/disk/dhcpcd/eth0.lease:/var/lib/dhcpcd/eth0.lease
 
   - name: haproxy
     image: simon-engledew/haproxy:latest
@@ -89,10 +95,10 @@ services:
   - name: vault
     image: simon-engledew/vault:latest
 
-  - name: getty
-    image: linuxkit/getty:v0.7
-    env:
-      - INSECURE=true
+  # - name: getty
+  #   image: linuxkit/getty:v0.7
+  #   env:
+  #     - INSECURE=true
 
 files:
   - path: var/disk

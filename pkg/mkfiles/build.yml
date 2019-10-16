@@ -1,0 +1,7 @@
+image: mkfiles
+config:
+  runtime:
+    mkdir:
+      - /var/disk/dhcpcd
+  binds:
+    - /var/disk:/var/disk

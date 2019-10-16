@@ -9,3 +9,9 @@ if [ ! -f /var/disk/certs/https.pem ]; then
 
     (umask 0077; cat /var/disk/certs/https.key /var/disk/certs/https.crt > /var/disk/certs/https.pem)
 fi
+
+chvt 2
+
+echo "Loading console..."
+
+exec /usr/bin/console "Connect to https://$(addr eth0)"

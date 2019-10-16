@@ -5,3 +5,7 @@ config:
       - /var/disk/certs
   binds:
     - /var/disk:/var/disk
+    - /dev:/dev
+    - /sys:/sys
+  capabilities:
+    - CAP_SYS_TTY_CONFIG
